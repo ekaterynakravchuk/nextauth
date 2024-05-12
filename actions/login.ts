@@ -1,7 +1,7 @@
 'use server'
 
 import { z } from 'zod'
-import { LoginSchema } from '@/schemas/schemas'
+import { LoginSchema } from '@/schemas'
 
 export const login = async (values: z.infer<typeof LoginSchema>)=> {
   const validatedValues = LoginSchema.safeParse(values);
