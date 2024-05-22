@@ -14,6 +14,10 @@ declare module 'next-auth' {
 }
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
+  pages:{
+    signIn: "/auth/login",
+    error: "/auth/error"
+  },
   events: {
     async linkAccount({ user }) {
       await db.user.update({
@@ -27,6 +31,19 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     },
   },
   callbacks: {
+    async signIn({user, account}){
+      console.log(user, account);
+      
+      if (account?.provider !== 'credentials') return true;
+
+      if (!user.id) return false; // Handle the case where user.id is undefined
+
+      const existingUser = await getUserById(user.id);
+
+      if(!existingUser?.emailVerified) return false;
+
+      return true
+    },
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
